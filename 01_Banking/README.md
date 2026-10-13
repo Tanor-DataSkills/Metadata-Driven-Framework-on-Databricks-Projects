@@ -93,7 +93,7 @@ Chacune des tables bronze, silver et gold aura une ligne sur la tables de metada
     - [ ] **Metadata Setup**
           
         - [ ] Go to Unity catalog Databrikcks -> Créer 4 Folders(`01_Setup_Metadata, 02_Source_to_Silver, 03_Silver_to_Gold, 04_Email_Notification`)
-        - [ ] Dans le Folder `01_Setup_Metadata` on crée les tables de Metadata avec code disponible dans le fichier ***01_Setup_Metadata.sql*** dans le catalog `banking` et le schema `metadata`
+        - [ ] Dans le Folder `01_Setup_Metadata` on crée les tables de Metadata avec code disponible dans le fichier ***01_Setup_Metadata.sql*** dans le catalog `banking` et le schema `metadata`.Pour checker les tables metadata on utilise le fichier ***02_Check_Metadata.sql***
                   
     - [ ]  **Setup Azure blob storage as volume**
           
