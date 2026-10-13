@@ -38,7 +38,7 @@ Dans ce projet, nous allons concevoir et bâtir, de A à Z, un framework robuste
 
 ---
 
-- **Sources de données:** Nous utiliserons **2 sources de données**: SQL Server et Azure blob storage(on utilisera le ***Volume de Databricks*** car ayant les memes caractéristiques de stockage cloud)
+- **Sources de données:** Nous utiliserons **2 sources de données**: SQL Databse et Azure blob storage(on utilisera le ***Volume de Databricks*** car ayant les memes caractéristiques de stockage cloud)
 - **Ingestion:** Ensuite on va ingérer les données à l'aide des fonctionnalités de Databricks **Lakeflow connect** pour Salesforce, PostgreSQL; **Auto loader** pour Azure blob storage
 - **Transformations:** Pour la transformation des données dans une medaillon architecture on utilisera le composant **Lakeflow Déclarative Pipelines** de Databricks.
 - **Data consum:** Pour la consommation on produira des **Databricks dashboards** et **Genie workspace**.
@@ -63,7 +63,17 @@ L'image ci-dessous montre nos Metadata tables:
 ## Metadata Tables
 <img width="834" height="581" alt="image" src="https://github.com/user-attachments/assets/a84fbcb9-a1c3-4b68-be1e-fb540bb188ce" />
 
-Nous disposons 4 tables de metadata: tables, table_parameters, table_watermarks, pipeline_runs
+Nous disposons **4 tables de metadata: tables, table_parameters, table_watermarks, pipeline_runs**
+
+Chacune des tables bronze, silver et gold aura une ligne sur la tables de metadata
+- ### tables:
+  Toutes les informations relatives à chacune des tables bronze, silver et gold; chacune des tables correspond à une ligne
+- ### table_parameters:
+  Les paramètres relatifs aux tables(qui peuvent évoluer dans le futur), bronze, silver et layer y sont stockés
+- ### table_watermarks:
+- ### pipeline_runs:
+  Il s'agit de la table d'audit qui permet de contrôler l'execution
+  
 
 ---
 
@@ -75,24 +85,25 @@ Nous disposons 4 tables de metadata: tables, table_parameters, table_watermarks,
 
 - [ ]  **Environment setup**
       
-    - [ ]  **Setup PostgreSQL**
+    - [ ]  **Setup SQL Database as Source**
           
-        - [ ]  Use Neon serveless postgres(https://neon.com) et utiliser un google account
-        - [ ]  Donner un project name ( retail_project) et choisir une région proche de France
-            - [ ]  Copier et coller quelque part le lien d'accès généré(qui sera ultérieurement utilisé)
-        - [ ]  Créons les tables sources **product_catalog** et **inventory** dans Postgres en y insérant des données(avec copier coller sur sql editor du code sql disponible dans les fichiers ***01_postgres_product_history.sql*** et ***02_postgres_inventory_history.sql*** disponible dans le dossier ***00_Source_Data*** de ce repos)
-    
-    - [ ]  **Setup Salesforce**
+        - [ ]  Use Azure SQL Database
+        - [ ]  Créons les tables sources `banking.acounts, banking.branches, banking.customers et banking.transactions` dans le schema `banking` de SQL Database en y insérant des données(avec copier coller sur SQL editor du code sql disponible dans les fichier ***01_Create_Tables.sql*** et  ***02_Insert_Historical_data.sql*** disponibles dans le dossier `01_SQL_Server/00_Source_Files` de ce repos)
+
+    - [ ] **Metadata Setup**
           
-        - [ ]  Use salesforce trial account (30 days free trial)
-        - [ ]  Conserver le username reçu par mail and reset the password
-        - [ ]  Créons les tables sources **Account** & **Opportunity** en important dans salesforce Accounts et Opportunités(fichiers client & Opportunités) les fichiers ***03_salesforce_accounts_history.csv*** et ***04_salesforce_opportunities_history*** disponible dans le dossier ***00_Source_Data*** de ce repos.
+        - [ ] Go to Unity catalog Databrikcks -> Créer 4 Folders(`01_Setup_Metadata, 02_Source_to_Silver, 03_Silver_to_Gold, 04_Email_Notification`)
+        - [ ] Dans le Folder `01_Setup_Metadata` on crée les tables de Metadata avec code disponible dans le fichier ***01_Setup_Metadata.sql*** dans le catalog `banking` et le schema `metadata`
                   
     - [ ]  **Setup Azure blob storage as volume**
           
   Azure blob storage, S3, gcp sont des stockages cloude qui peuvent stocker n'importe quel type de données(structured, semi structured, not structured).Nous pouvons créer un volume dans Databricks qui aura les memes caractéristiques de stockage que les clouds.
-     - [ ]  Créer un nouveau schéma(***Volumes*** et y créer un volume ***blob_source*** dans le catalog ***retail_q***
+     - [ ]  Créer un nouveau schéma(`source` et y créer un volume `volume` dans le catalog `banking`
      - [ ]  On a 2 choix de types de volume(external et managed); on choisit managed pour un volume entierement managé par Unity catalog. On aurait choisi external si on avait un adsl ou s3.
+     
+- [ ]  ^ç
+
+- [ ]  
      - [ ]  Créer un répertoire dans volume nommé ***transactions_source** pour y stocker les fichiers source transactions (***05_blob_transactions_history.csv***) disponibles dans le dossier ***00_Source_Data*** de ce repos)
      - [ ]  On importe le fichier ***05_blob_transactions_history.csv*** dans le volume
      - [ ]  Copier le ***path:*** "/Volumes/nom catalog/nom schema/nom volume/nom répertoire correspondant dans notre cas à ***"/Volumes/retail_q/Volumes/blob_source/transactions_source"*** (qui sera ultérieurement utilisé)
@@ -110,6 +121,7 @@ Nous utiliserons les connecteurs managés de lakeflow connect pour créer 2 pipe
 
 **Result:** Project is ready to start building Bronze, Silver, and Gold layers.
 
+
 </aside>
 
 ---
@@ -122,7 +134,7 @@ Nous utiliserons les connecteurs managés de lakeflow connect pour créer 2 pipe
 
 </aside>
 
-- [ ]   **Data Ingestion pipeline from Postgres with Lakeflow connect(phase 1)**
+- [ ]   **Data Ingestion from SQL Database to Unity catalog using Metadata-Driven Framework(phase 1)**
     - [ ]  Launch Databricks workspace
     - [ ]  Create catalog ***retail_q*** et schémas ***postgres_bronze*** for source coming from postgresSQL
     - [ ]  Go to Jobs & Pipelines -> Ingestion pipeline(correspondant au **Lakeflow connect** dans le repos)
