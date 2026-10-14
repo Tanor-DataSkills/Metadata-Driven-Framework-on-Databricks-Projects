@@ -73,7 +73,8 @@ Chacune des tables bronze, silver et gold aura une ligne sur la tables de metada
 - ### table_watermarks:
 - ### pipeline_runs:
   Il s'agit de la table d'audit qui permet de contrôler l'execution
-  
+
+
 
 ---
 
@@ -101,23 +102,14 @@ Chacune des tables bronze, silver et gold aura une ligne sur la tables de metada
      - [ ]  Créer un nouveau schéma(`source` et y créer un volume `volume` dans le catalog `banking`
      - [ ]  On a 2 choix de types de volume(external et managed); on choisit managed pour un volume entierement managé par Unity catalog. On aurait choisi external si on avait un adsl ou s3.
      
-- [ ]  ^ç
 
-- [ ]  
      - [ ]  Créer un répertoire dans volume nommé ***transactions_source** pour y stocker les fichiers source transactions (***05_blob_transactions_history.csv***) disponibles dans le dossier ***00_Source_Data*** de ce repos)
      - [ ]  On importe le fichier ***05_blob_transactions_history.csv*** dans le volume
      - [ ]  Copier le ***path:*** "/Volumes/nom catalog/nom schema/nom volume/nom répertoire correspondant dans notre cas à ***"/Volumes/retail_q/Volumes/blob_source/transactions_source"*** (qui sera ultérieurement utilisé)
      - [ ]  ***blob_source*** etant disponible dans un volume nous devons l'ingérer dans un nouveau schéma ***blob_bronze** du catalog ***retail_q***.
 
-> [!NOTE]
-> 
-> **Lakeflow Connect** *est une collection de connecteurs managés dans Azure Databricks qui simplifient l’ingestion des données à partir de sources externes. Au lieu d’écrire du code d’extraction personnalisé, vous configurez des pipelines via une interface graphique ou des définitions déclaratives.*
-> 
-> *Dans le lakeflow connect des connecteurs managés sont disponibles pour salesforces, postgres et tant d'autres rendant l'option ***ingestion pipeline (lakeflow connect)*** possible mais un transfert de données d'un volume databricks à un schema (ou élémens internes à Unity catalog) n'est pas disponible car on a affaire à un transfert entre repertoires. On ne peut donc utiliser l'option ingestion pipeline (lakeflow connect) comme on l'a fait tantôt avec salesforce et postgres.Peut dans l'avenir Databricks intégrera un connecteur adapté dans le lakeflow connect.*
->
-> *Lorsque vous créez un pipeline d’ingestion pour un connecteur de base de données tel que SQL Server, Lakeflow Connect crée également une passerelle d’ingestion. Cette passerelle extrait en continu les données modifiées de la base de données source et les met en phase pour le traitement. Pour les connecteurs SaaS comme Salesforce, le connecteur gère l’extraction directement sans passerelle distincte.
-Pour pallier à ce problème Databricks dispose d'un outil appelé ***Auto loader*** faisant référence à une ingestion interne à Databricks disponible via notebook.
-Nous utiliserons les connecteurs managés de lakeflow connect pour créer 2 pipelines d'ingestion pour les données sources de Salesforces et Neon postgreSQL; pour ce qui est des données qui sont le volume de Databricks on utilisera Auto loader à travers un code personnalisé sur notebook python.*
+    - [ ]  **Setup Secret Scope**
+
 
 **Result:** Project is ready to start building Bronze, Silver, and Gold layers.
 
@@ -126,7 +118,7 @@ Nous utiliserons les connecteurs managés de lakeflow connect pour créer 2 pipe
 
 ---
 > [!NOTE]
-> ## 🥉 Phase 3 - Building Bronze Layers(postgres_bronze, salesforce_bronze, blob_bronze)
+> ## 🥉 Phase 3 - Building Source to Bronze Ingestion
 
 <aside>
 
@@ -289,7 +281,7 @@ Nous utiliserons les connecteurs managés de lakeflow connect pour créer 2 pipe
 
 ---
 > [!NOTE]
-> ## 🥈 Phase 4 - Building Silver Layer (Data Cleaning & Transformation)
+> ## 🥈 Phase 4 - Building Bronze to Silver Ingestion
 
 <aside>
 
